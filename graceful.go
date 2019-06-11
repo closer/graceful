@@ -8,8 +8,12 @@ import (
 	"sync"
 )
 
+// Trapped is the error returned by Context.Err when the context is trapped.
 var Trapped = errors.New("context trapped")
 
+// WithTrap returns a copy of parent with a new Done channel. The returned
+// context's Done channel is closed when the specified signal is trapped
+// or when the parent context's Done channel is closed, whichever happens first.
 func WithTrap(parent context.Context, sigs ...os.Signal) context.Context {
 	trap := make(chan os.Signal, 1)
 	signal.Notify(trap, sigs...)

@@ -2,14 +2,24 @@ package graceful
 
 import (
 	"context"
-	"errors"
 	"os"
 	"os/signal"
 	"sync"
 )
 
 // Trapped is the error returned by Context.Err when the context is trapped.
-var Trapped = errors.New("context trapped")
+// It wraps context.Canceled.
+var Trapped = &trapped{}
+
+type trapped struct{}
+
+func (t *trapped) Error() string {
+	return "context trapped"
+}
+
+func (t *trapped) Unwrap() error {
+	return context.Canceled
+}
 
 // WithTrap returns a copy of parent with a new Done channel. The returned
 // context's Done channel is closed when the specified signal is trapped
